@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Serviço Aqui — App Cliente + App Prestador</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#1D9E75;--g50:#E1F5EE;--g100:#9FE1CB;--gd:#0F6E56;
+  --bl:#378ADD;--bl50:#E6F1FB;--bl30:rgba(55,138,221,.12);
+  --am:#EF9F27;--am50:#FAEEDA;
+  --r:#E24B4A;--r50:#FCEBEB;
+  --t0:#1C1C1A;--t1:#5F5E5A;--t2:#888780;
+  --bg:#F5F4EF;--bgc:#fff;--bgs:#F1EFE8;
+  --br:#D3D1C7;--brl:#EAE8E1;
+  --font:'DM Sans',sans-serif;
+}
+html,body{height:100%;background:#0d0d0d;font-family:var(--font);overflow:hidden;user-select:none}
+
+/* ── LAYOUT ──────────────────────────────────────── */
+.stage{
+  height:100vh;display:flex;flex-direction:column;
+  align-items:center;padding:0;overflow:hidden;
+}
+
+/* ── HEADER ──────────────────────────────────────── */
+.header{
+  width:100%;padding:14px 32px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;
+}
+.header-logo{display:flex;align-items:center;gap:10px}
+.header-icon{width:32px;height:32px;border-radius:8px;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:16px}
+.header-name{font-size:15px;font-weight:600;color:#fff}
+.header-sub{font-size:11px;color:rgba(255,255,255,.35);margin-left:4px}
+.header-right{display:flex;align-items:center;gap:12px}
+.sync-btn{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(29,158,117,.15);border:1px solid rgba(29,158,117,.3);
+  color:#4fd4a8;font-size:12px;font-weight:500;padding:7px 16px;
+  border-radius:99px;cursor:pointer;font-family:var(--font);
+  transition:all .2s;
+}
+.sync-btn:hover{background:rgba(29,158,117,.25)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#4fd4a8;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── DUAL PHONES AREA ────────────────────────────── */
+.phones-area{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  gap:0;padding:12px 20px;overflow:hidden;width:100%;
+}
+
+/* ── APP COLUMN ──────────────────────────────────── */
+.app-col{display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0}
+.app-label{
+  font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  padding:5px 14px;border-radius:99px;
+}
+.app-label.cliente{background:rgba(55,138,221,.15);color:#6db5f5;border:1px solid rgba(55,138,221,.25)}
+.app-label.prestador{background:rgba(29,158,117,.15);color:#4fd4a8;border:1px solid rgba(29,158,117,.25)}
+
+/* ── PHONE FRAME ─────────────────────────────────── */
+.phone-frame{
+  width:310px;height:660px;
+  background:#111;border-radius:44px;padding:10px;
+  box-shadow:0 0 0 1px #222,0 30px 60px rgba(0,0,0,.7);
+  position:relative;flex-shrink:0;
+}
+.phone-screen{width:100%;height:100%;border-radius:36px;overflow:hidden;position:relative;background:var(--bg)}
+.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:90px;height:24px;background:#111;border-radius:0 0 16px 16px;z-index:200}
+.status-bar{height:34px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px 6px;font-size:10px;font-weight:500;position:relative;z-index:100;flex-shrink:0}
+
+/* ── SCREENS ─────────────────────────────────────── */
+.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;background:var(--bg)}
+.screen::-webkit-scrollbar{display:none}
+.screen.off{display:none}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.screen.on{animation:slideIn .2s ease forwards}
+
+/* ── NAV BAR BELOW PHONE ─────────────────────────── */
+.phone-nav{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:310px}
+.pnav-btn{
+  padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);
+  background:transparent;color:rgba(255,255,255,.4);font-family:var(--font);
+  font-size:11px;cursor:pointer;transition:all .15s;
+}
+.pnav-btn:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7)}
+.pnav-btn.act{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)}
+.pnav-btn.act.bl{background:rgba(55,138,221,.15);color:#6db5f5;border-color:rgba(55,138,221,.3)}
+.pnav-btn.act.gr{background:rgba(29,158,117,.15);color:#4fd4a8;border-color:rgba(29,158,117,.3)}
+
+/* ── CONNECTION VISUAL ───────────────────────────── */
+.connection{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:0 12px;margin-top:-20px;
+}
+.conn-line{
+  width:2px;height:180px;
+  background:linear-gradient(to bottom,transparent,rgba(255,255,255,.05) 20%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.05) 80%,transparent);
+  position:relative;
+}
+.conn-line::after{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:8px;height:8px;border-radius:50%;background:#333;
+}
+.conn-label{font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.08em;text-transform:uppercase;writing-mode:vertical-rl;text-orientation:mixed}
+.notification-bubble{
+  position:absolute;top:-8px;right:-8px;
+  background:var(--r);color:#fff;font-size:10px;font-weight:600;
+  width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:2px solid #111;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);z-index:300;
+}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+
+/* ── SHARED UI ───────────────────────────────────── */
+.appbar{
+  background:var(--bgc);padding:8px 14px;
+  border-bottom:.5px solid var(--brl);display:flex;align-items:center;gap:8px;
+  position:sticky;top:0;z-index:50;flex-shrink:0;
+}
+.appbar-title{font-size:14px;font-weight:500;color:var(--t0);flex:1}
+.back-btn{width:28px;height:28px;border-radius:50%;background:var(--bgs);border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-primary{background:var(--g);color:#fff;border:none;border-radius:10px;padding:12px;font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s}
+.btn-primary.bl{background:var(--bl)}
+.btn-outline{background:transparent;color:var(--g);border:1.5px solid var(--g);border-radius:10px;padding:10px;font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;width:100%}
+.btn-danger{background:transparent;color:var(--r);border:1.5px solid var(--r);border-radius:10px;padding:10px;font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;width:100%}
+.section{background:var(--bgc);border-radius:12px;padding:12px 14px;margin:0 10px 8px}
+.sec-title{font-size:12px;font-weight:500;color:var(--t0);margin-bottom:8px}
+.chip-row{display:flex;gap:5px;overflow-x:auto;padding:8px 10px;background:var(--bgc);scrollbar-width:none}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{padding:6px 10px;border-radius:99px;font-size:11px;font-weight:500;white-space:nowrap;cursor:pointer;border:none}
+.chip.act{background:var(--g);color:#fff}
+.chip.off{background:var(--g50);color:var(--g)}
+.chip.off.bl{background:var(--bl50);color:#0C447C}
+.search-bar{background:var(--bgs);border-radius:10px;display:flex;align-items:center;gap:7px;padding:8px 12px;font-size:12px;color:var(--t2);cursor:pointer;border:none;width:100%;margin:8px 10px;width:calc(100% - 20px)}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0}
+.stars{display:flex;align-items:center;gap:1px;font-size:10px;color:var(--am)}
+.tag{background:var(--g50);color:var(--g);font-size:10px;font-weight:500;padding:2px 7px;border-radius:99px}
+.tag.bl{background:var(--bl50);color:#0C447C}
+.badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:99px}
+.badge.green{background:var(--g50);color:var(--g)}
+.badge.blue{background:var(--bl50);color:#185FA5}
+.badge.amber{background:var(--am50);color:#633806}
+.badge.red{background:var(--r50);color:var(--r)}
+.badge.gray{background:var(--bgs);color:var(--t2)}
+.info-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:.5px solid var(--brl);font-size:12px}
+.info-row:last-child{border:none}
+.info-key{color:var(--t2)}
+.info-val{color:var(--t0);font-weight:500}
+.msg{margin-bottom:6px;display:flex;flex-direction:column}
+.msg.me{align-items:flex-end}
+.msg.other{align-items:flex-start}
+.bubble{max-width:75%;padding:8px 11px;border-radius:12px;font-size:12px;line-height:1.45}
+.bubble.me{background:var(--g);color:#fff;border-bottom-right-radius:2px}
+.bubble.other{background:var(--bgc);color:var(--t0);border-bottom-left-radius:2px}
+.tl-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:4px}
+.tl-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0}
+.tl-dot.done{background:var(--g);color:#fff}
+.tl-dot.cur{background:var(--g);color:#fff;animation:pulse 1.5s infinite}
+.tl-dot.wait{background:var(--bgs);border:1px solid var(--br)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(29,158,117,.4)}50%{box-shadow:0 0 0 5px rgba(29,158,117,0)}}
+.tl-line{width:2px;height:14px;margin:2px 0 2px 9px}
+.tl-line.done{background:var(--g)}
+.tl-line.wait{background:var(--br)}
+.bottom-nav{background:var(--bgc);border-top:.5px solid var(--brl);display:flex;padding:6px 0 16px;position:sticky;bottom:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:3px}
+.tab-lbl{font-size:9px;color:var(--t2)}
+.tab-lbl.a{color:var(--g)}
+.tab-lbl.a.bl{color:var(--bl)}
+.notif-card{background:var(--bgc);border-radius:12px;padding:14px;margin:8px 10px;border:.5px solid var(--brl);position:relative}
+.notif-card.new{border:1.5px solid var(--g);background:rgba(29,158,117,.03)}
+.stat-mini{background:var(--bgs);border-radius:8px;padding:10px;text-align:center;flex:1}
+.stat-n{font-size:18px;font-weight:600;color:var(--g)}
+.stat-l{font-size:10px;color:var(--t2)}
+.toggle-row{display:flex;gap:6px}
+.tog{flex:1;border:.5px solid var(--br);border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;transition:all .15s;font-size:11px;font-weight:500;color:var(--t1)}
+.tog.sel{background:var(--g50);border-color:var(--g);color:var(--g)}
+</style>
+</head>
+<body>
+<div class="stage">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">
+    <div class="header-icon">🔧</div>
+    <div>
+      <span class="header-name">Serviço Aqui</span>
+      <span class="header-sub">— dois apps, um ecossistema</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="sync-btn" onclick="runSync()">
+      <span class="sync-dot"></span>
+      Simular fluxo completo
+    </button>
+    <div style="color:rgba(255,255,255,.25);font-size:11px">Araruama, RJ</div>
+  </div>
+</div>
+
+<!-- PHONES AREA -->
+<div class="phones-area">
+
+  <!-- ══ APP CLIENTE ══════════════════════════════ -->
+  <div class="app-col">
+    <div class="app-label cliente">📱 App do cliente</div>
+
+    <div class="phone-frame" id="phone-c">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar" id="sb-c" style="background:var(--bgc);color:var(--t0)">
+          <span>9:41</span><span>● ● WiFi 🔋</span>
+        </div>
+        <div style="position:relative;height:calc(100% - 34px);overflow:hidden" id="cscreens">
+
+          <!-- C: HOME -->
+          <div class="screen on" id="c-home">
+            <div class="appbar" style="justify-content:space-between">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:var(--t0)">Serviço Aqui</div>
+                <div style="font-size:10px;color:var(--t2)">📍 Araruama, RJ</div>
+              </div>
+              <div style="display:flex;gap:6px">
+                <div style="width:28px;height:28px;border-radius:50%;background:var(--bl50);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--bl)">S</div>
+              </div>
+            </div>
+            <button class="search-bar" onclick="cGo('c-search')">🔍 Que serviço você precisa?</button>
+            <div class="chip-row">
+              <button class="chip act" onclick="cGo('c-list')">🔧 Todos</button>
+              <button class="chip off" onclick="cGo('c-list')">⚡ Elétrica</button>
+              <button class="chip off" onclick="cGo('c-list')">💧 Hidráulica</button>
+              <button class="chip off" onclick="cGo('c-list')">🎨 Pintura</button>
+              <button class="chip off">🧹 Limpeza</button>
+            </div>
+
+            <div style="padding:4px 12px 6px;font-size:11px;color:var(--t2)">Destaques perto de você</div>
+
+            <!-- BANNER -->
+            <div style="margin:0 10px 8px;background:linear-gradient(135deg,var(--g),var(--bl));border-radius:12px;padding:14px;color:#fff">
+              <div style="font-size:11px;opacity:.8;margin-bottom:4px">✨ Novidade</div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:4px">Prestadores verificados</div>
+              <div style="font-size:11px;opacity:.8">Profissionais checados e avaliados pela comunidade de Araruama</div>
+            </div>
+
+            <div onclick="cGo('c-profile')" style="cursor:pointer" class="notif-card">
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div class="avatar" style="width:44px;height:44px;background:#E1F5EE;color:var(--g);font-size:14px;position:relative">
+                  JS
+                  <div style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:var(--g);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff">✓</div>
+                </div>
+                <div style="flex:1">
+                  <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+                    <span style="font-size:13px;font-weight:500;color:var(--t0)">João Silva</span>
+                    <span class="badge green">PRO</span>
+                  </div>
+                  <div class="stars">★★★★★ <span style="color:var(--t2);margin-left:2px">4.9 (47)</span></div>
+                  <div style="font-size:11px;color:var(--t1);margin-top:3px">Elétrica · até 15km</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:14px;font-weight:600;color:var(--g)">R$80</div>
+                  <div style="font-size:9px;color:var(--t2)">/hora</div>
+                </div>
+              </div>
+              <div style="margin-top:8px;display:flex;gap:4px">
+                <span class="tag">Elétrica</span>
+                <span style="font-size:10px;color:var(--g);margin-left:auto">✓ Disponível</span>
+              </div>
+            </div>
+
+            <div class="notif-card" style="opacity:.65;cursor:pointer" onclick="cGo('c-list')">
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div class="avatar" style="width:44px;height:44px;background:#FBEAF0;color:#D4537E;font-size:14px">MA</div>
+                <div style="flex:1">
+                  <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+                    <span style="font-size:13px;font-weight:500;color:var(--t0)">Maria Alves</span>
+                    <span class="badge green">PRO</span>
+                  </div>
+                  <div class="stars">★★★★★ <span style="color:var(--t2);margin-left:2px">4.8 (32)</span></div>
+                  <div style="font-size:11px;color:var(--t1);margin-top:3px">Limpeza</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:14px;font-weight:600;color:var(--g)">R$60</div>
+                  <div style="font-size:9px;color:var(--t2)">/hora</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-nav">
+              <div class="tab"><div style="font-size:18px">🏠</div><div class="tab-lbl a bl">Início</div></div>
+              <div class="tab"><div style="font-size:18px">📋</div><div class="tab-lbl">Pedidos</div></div>
+              <div class="tab" onclick="cGo('c-chat')"><div style="font-size:18px">💬</div><div class="tab-lbl">Chat</div></div>
+              <div class="tab"><div style="font-size:18px">👤</div><div class="tab-lbl">Perfil</div></div>
+            </div>
+          </div>
+
+          <!-- C: SEARCH -->
+          <div class="screen off" id="c-search">
+            <div class="appbar">
+              <button class="back-btn" onclick="cGo('c-home')">←</button>
+              <div style="flex:1;background:var(--bgs);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--t2)">🔍 Elétrica</div>
+            </div>
+            <div style="padding:8px 10px 4px;font-size:11px;color:var(--t2)">4 resultados para "Elétrica"</div>
+            <div onclick="cGo('c-profile')" class="notif-card new" style="cursor:pointer">
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <div class="avatar" style="width:42px;height:42px;background:#E1F5EE;color:var(--g);font-size:13px;position:relative">
+                  JS
+                  <div style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:var(--g);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff">✓</div>
+                </div>
+                <div style="flex:1">
+                  <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">
+                    <span style="font-size:12px;font-weight:500;color:var(--t0)">João Silva</span>
+                    <span class="badge green">PRO</span>
+                  </div>
+                  <div class="stars">★★★★★ <span style="color:var(--t2)">4.9</span></div>
+                </div>
+                <div><div style="font-size:13px;font-weight:600;color:var(--g)">R$80/h</div></div>
+              </div>
+              <div style="margin-top:6px;display:flex;gap:4px"><span class="tag">Elétrica</span><span style="font-size:10px;color:var(--g);margin-left:auto">✓ Disponível agora</span></div>
+            </div>
+            <div class="notif-card" style="cursor:pointer">
+              <div style="display:flex;gap:10px;align-items:center">
+                <div class="avatar" style="width:42px;height:42px;background:#EAF3DE;color:#3B6D11;font-size:13px">RL</div>
+                <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--t0)">Roberto Lima</div><div class="stars">★★★★☆ <span style="color:var(--t2)">4.4</span></div></div>
+                <div><div style="font-size:13px;font-weight:600;color:var(--g)">R$70/h</div></div>
+              </div>
+            </div>
+            <div class="notif-card" style="cursor:pointer;opacity:.6">
+              <div style="display:flex;gap:10px;align-items:center">
+                <div class="avatar" style="width:42px;height:42px;background:#F1EFE8;color:#888780;font-size:13px">PC</div>
+                <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--t0)">Paulo Costa</div><div class="stars">★★★★☆ <span style="color:var(--t2)">4.2</span></div></div>
+                <div><div style="font-size:13px;font-weight:600;color:var(--g)">R$65/h</div><div style="font-size:9px;color:var(--t2)">Indisp.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- C: PROFILE -->
+          <div class="screen off" id="c-profile">
+            <div class="appbar">
+              <button class="back-btn" onclick="cGo('c-home')">←</button>
+              <div class="appbar-title">Perfil</div>
+            </div>
+            <div class="section" style="display:flex;gap:12px;align-items:flex-start">
+              <div class="avatar" style="width:56px;height:56px;background:#E1F5EE;color:var(--g);font-size:18px;position:relative">
+                JS
+                <div style="position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:var(--g);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff">✓</div>
+              </div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                  <span style="font-size:16px;font-weight:600;color:var(--t0)">João Silva</span>
+                  <span class="badge green">PRO</span>
+                </div>
+                <div class="stars" style="font-size:12px;margin-bottom:3px">★★★★★ <span style="color:var(--t2)">4.9 · 47 serviços</span></div>
+                <div style="font-size:11px;color:var(--g)">✓ Identidade verificada</div>
+              </div>
+            </div>
+            <div class="section">
+              <div class="sec-title">Disponibilidade</div>
+              <div style="display:flex;gap:3px;margin-bottom:8px">
+                <div style="flex:1;background:var(--g);border-radius:5px;padding:5px;text-align:center;font-size:10px;font-weight:500;color:#fff">S</div>
+                <div style="flex:1;background:var(--g);border-radius:5px;padding:5px;text-align:center;font-size:10px;font-weight:500;color:#fff">T</div>
+                <div style="flex:1;background:var(--g);border-radius:5px;padding:5px;text-align:center;font-size:10px;font-weight:500;color:#fff">Q</div>
+                <div style="flex:1;background:var(--g);border-radius:5px;padding:5px;text-align:center;font-size:10px;font-weight:500;color:#fff">Q</div>
+                <div style="flex:1;background:var(--g);border-radius:5px;padding:5px;text-align:center;font-size:10px;font-weight:500;color:#fff">S</div>
+                <div style="flex:1;background:var(--bgs);border-radius:5px;padding:5px;text-align:center;font-size:10px;color:var(--t2)">S</div>
+                <div style="flex:1;background:var(--bgs);border-radius:5px;padding:5px;text-align:center;font-size:10px;color:var(--t2)">D</div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px">
+                <span style="color:var(--t2)">⏰ 08:00–18:00</span>
+                <span style="color:var(--g)">✓ Disponível hoje</span>
+              </div>
+            </div>
+            <div class="section">
+              <div class="sec-title">Sobre</div>
+              <div style="font-size:12px;color:var(--t1);line-height:1.6">10 anos de experiência. Instalações elétricas residenciais e comerciais. Atende toda região dos Lagos.</div>
+            </div>
+            <div class="section">
+              <div class="sec-title">Avaliações recentes</div>
+              <div style="font-size:12px;color:var(--t0);line-height:1.5;padding-bottom:8px;border-bottom:.5px solid var(--brl);margin-bottom:8px">"Ótimo! Rápido e deixou tudo limpo." ★★★★★</div>
+              <div style="font-size:12px;color:var(--t0);line-height:1.5">"Super recomendo, muito pontual." ★★★★★</div>
+            </div>
+            <div style="padding:10px;position:sticky;bottom:0;background:var(--bgc);border-top:.5px solid var(--brl)">
+              <button class="btn-primary" onclick="cGo('c-request')">🔧 Solicitar serviço · R$80/h</button>
+            </div>
+          </div>
+
+          <!-- C: REQUEST -->
+          <div class="screen off" id="c-request">
+            <div class="appbar">
+              <button class="back-btn" onclick="cGo('c-profile')">←</button>
+              <div class="appbar-title">Solicitar serviço</div>
+            </div>
+            <div style="padding:0 0 80px">
+              <div class="section" style="display:flex;align-items:center;gap:10px">
+                <div class="avatar" style="width:38px;height:38px;background:#E1F5EE;color:var(--g);font-size:12px">JS</div>
+                <div style="flex:1"><div style="font-size:13px;font-weight:500">João Silva</div><div class="stars">★★★★★</div></div>
+                <div style="font-size:13px;font-weight:600;color:var(--g)">R$80/h</div>
+              </div>
+              <div class="section">
+                <div class="sec-title">Tipo de serviço</div>
+                <div style="display:flex;gap:5px;flex-wrap:wrap">
+                  <div class="tog sel">⚡ Elétrica</div>
+                  <div class="tog">🔧 Manutenção</div>
+                </div>
+              </div>
+              <div class="section">
+                <div class="sec-title">Descrição do problema</div>
+                <div style="background:var(--bgs);border-radius:8px;padding:10px;font-size:12px;color:var(--t0);line-height:1.5;min-height:60px">Tomada queimada na sala, cheiro de plástico ao ligar aparelhos.</div>
+              </div>
+              <div class="section">
+                <div class="sec-title">Quando?</div>
+                <div class="toggle-row">
+                  <div class="tog sel">⚡ Hoje</div>
+                  <div class="tog">📅 Amanhã</div>
+                  <div class="tog">📆 Agendar</div>
+                </div>
+              </div>
+              <div class="section">
+                <div class="sec-title">Pagamento</div>
+                <div class="toggle-row">
+                  <div class="tog sel">🟢 Pix</div>
+                  <div class="tog">💵 Dinheiro</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:10px;position:sticky;bottom:0;background:var(--bgc);border-top:.5px solid var(--brl)">
+              <button class="btn-primary" onclick="sendRequest()">📤 Confirmar e enviar para João</button>
+            </div>
+          </div>
+
+          <!-- C: TRACK -->
+          <div class="screen off" id="c-track">
+            <div class="appbar">
+              <button class="back-btn" onclick="cGo('c-home')">←</button>
+              <div class="appbar-title">Acompanhar serviço</div>
+            </div>
+            <div style="padding:8px 0 80px">
+              <div class="section" style="text-align:center;padding:16px">
+                <span id="c-track-badge" class="badge amber" style="font-size:11px;padding:5px 12px">⏳ Aguardando João confirmar</span>
+                <div style="margin-top:14px">
+                  <div class="tl-step"><div class="tl-dot done" id="tl1">✓</div><div style="font-size:12px;font-weight:500;color:var(--t0)">Solicitação enviada</div></div>
+                  <div class="tl-line done"></div>
+                  <div class="tl-step"><div class="tl-dot wait" id="tl2"></div><div style="font-size:12px;color:var(--t2)" id="tl2-lbl">Prestador confirma...</div></div>
+                  <div class="tl-line wait" id="tll3"></div>
+                  <div class="tl-step"><div class="tl-dot wait" id="tl3"></div><div style="font-size:12px;color:var(--t2)">A caminho</div></div>
+                  <div class="tl-line wait" id="tll4"></div>
+                  <div class="tl-step"><div class="tl-dot wait" id="tl4"></div><div style="font-size:12px;color:var(--t2)">Em andamento</div></div>
+                  <div class="tl-line wait" id="tll5"></div>
+                  <div class="tl-step"><div class="tl-dot wait" id="tl5"></div><div style="font-size:12px;color:var(--t2)">Concluído</div></div>
+                </div>
+              </div>
+              <div class="section">
+                <div class="info-row"><span class="info-key">Serviço</span><span class="info-val">Elétrica</span></div>
+                <div class="info-row"><span class="info-key">Prestador</span><span class="info-val">João Silva</span></div>
+                <div class="info-row"><span class="info-key">Horário</span><span class="info-val">Hoje, 13:30</span></div>
+              </div>
+              <div style="padding:0 10px;display:flex;flex-direction:column;gap:6px">
+                <button class="btn-primary" id="c-chat-btn" onclick="cGo('c-chat')" style="display:none">💬 Chat com João</button>
+                <button class="btn-primary" id="c-pay-btn" onclick="cGo('c-payment')" style="display:none;background:var(--bl)">💳 Pagar via Pix</button>
+                <button class="btn-danger">✕ Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- C: CHAT -->
+          <div class="screen off" id="c-chat">
+            <div class="appbar">
+              <button class="back-btn" onclick="cGo('c-track')">←</button>
+              <div style="display:flex;align-items:center;gap:8px;flex:1">
+                <div class="avatar" style="width:30px;height:30px;background:#E1F5EE;color:var(--g);font-size:11px">JS</div>
+                <div><div style="font-size:13px;font-weight:500">João Silva</div><div style="font-size:10px;color:var(--g)">● Online</div></div>
+              </div>
+            </div>
+            <div style="padding:10px;min-height:360px">
+              <div class="msg other"><div class="bubble other">Oi! Vi sua solicitação. Posso estar aí em 20 min! 👍</div></div>
+              <div class="msg me"><div class="bubble me">Ótimo João! Estou te esperando.</div></div>
+              <div class="msg other"><div class="bubble other">Pode me mandar foto da tomada?</div></div>
+              <div class="msg me"><div class="bubble me">Claro! 📷 [foto enviada]</div></div>
+              <div class="msg other"><div class="bubble other">Vi a foto. É o condutor. Tenho as peças comigo, resolvo hoje.</div></div>
+              <div class="msg me"><div class="bubble me">Perfeito! Te espero 🙏</div></div>
+            </div>
+            <div style="background:var(--bgc);border-top:.5px solid var(--brl);padding:8px 10px 16px;display:flex;gap:8px;align-items:center">
+              <span style="font-size:18px;cursor:pointer">📷</span>
+              <div style="flex:1;background:var(--bgs);border-radius:20px;padding:8px 12px;font-size:12px;color:var(--t2)">Digite...</div>
+              <div style="width:34px;height:34px;border-radius:50%;background:var(--bl);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px">➤</div>
+            </div>
+          </div>
+
+          <!-- C: PAYMENT -->
+          <div class="screen off" id="c-payment">
+            <div class="appbar">
+              <button class="back-btn" onclick="cGo('c-track')">←</button>
+              <div class="appbar-title">Pagamento Pix</div>
+            </div>
+            <div style="padding:16px;text-align:center">
+              <div style="font-size:12px;color:var(--t2);margin-bottom:4px">Serviço concluído ✓</div>
+              <div style="font-size:26px;font-weight:700;color:var(--g);margin-bottom:16px">R$ 160,00</div>
+              <div style="width:150px;height:150px;border-radius:12px;background:#fff;border:1px solid var(--br);display:flex;align-items:center;justify-content:center;font-size:90px;margin:0 auto 14px">⊡</div>
+              <div style="font-size:11px;color:var(--t2);margin-bottom:14px">Escaneie com seu banco</div>
+              <div style="background:var(--bgs);border-radius:8px;padding:10px;margin-bottom:14px;font-size:10px;color:var(--t2);font-family:monospace;line-height:1.5;text-align:left;word-break:break-all">00020126580014br.gov.bcb.pix...SERVIÇOAQUI...R$160,00</div>
+              <div style="display:flex;gap:8px;align-items:center;background:var(--g50);border-radius:8px;padding:10px;margin-bottom:14px;text-align:left">
+                <span style="font-size:16px">🔒</span>
+                <span style="font-size:11px;color:var(--gd)">João recebe após confirmação automática do Pix</span>
+              </div>
+              <button class="btn-primary" onclick="cGo('c-review')">✅ Já paguei · confirmar</button>
+            </div>
+          </div>
+
+          <!-- C: REVIEW -->
+          <div class="screen off" id="c-review">
+            <div class="appbar">
+              <button class="back-btn" onclick="cGo('c-payment')">←</button>
+              <div class="appbar-title">Avaliar serviço</div>
+            </div>
+            <div style="padding:12px">
+              <div class="section" style="display:flex;align-items:center;gap:10px">
+                <div class="avatar" style="width:40px;height:40px;background:#E1F5EE;color:var(--g);font-size:13px">JS</div>
+                <div><div style="font-size:13px;font-weight:500">João Silva</div><div style="font-size:11px;color:var(--t2)">Elétrica</div></div>
+              </div>
+              <div class="section" style="text-align:center">
+                <div style="font-size:13px;font-weight:500;margin-bottom:12px">Como foi o serviço?</div>
+                <div style="display:flex;justify-content:center;gap:6px;font-size:36px;margin-bottom:8px">
+                  <span style="cursor:pointer;transition:transform .1s;color:var(--am)">★</span>
+                  <span style="cursor:pointer;color:var(--am)">★</span>
+                  <span style="cursor:pointer;color:var(--am)">★</span>
+                  <span style="cursor:pointer;color:var(--am)">★</span>
+                  <span style="cursor:pointer;color:var(--am)">★</span>
+                </div>
+                <div style="font-size:12px;color:var(--t1)">Excelente!</div>
+              </div>
+              <div class="section">
+                <div class="sec-title">Comentário</div>
+                <div style="background:var(--bgs);border-radius:8px;padding:10px;font-size:12px;color:var(--t0);line-height:1.5">Ótimo profissional! Resolveu rápido e deixou tudo limpo. Recomendo!</div>
+              </div>
+              <button class="btn-primary" onclick="sendReview()">⭐ Enviar avaliação</button>
+            </div>
+          </div>
+
+          <!-- C: SUCCESS -->
+          <div class="screen off" id="c-success">
+            <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;gap:10px">
+              <div style="width:70px;height:70px;border-radius:50%;background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:6px">⭐</div>
+              <div style="font-size:20px;font-weight:600;color:var(--t0)">Avaliação enviada!</div>
+              <div style="font-size:13px;color:var(--t2);line-height:1.6">Obrigado! Sua avaliação ajuda a comunidade de Araruama.</div>
+              <div style="background:var(--bgs);border-radius:10px;padding:14px;width:100%;margin-top:8px">
+                <div style="font-size:22px;font-weight:700;color:var(--g)">4.9 ★</div>
+                <div style="font-size:11px;color:var(--t2)">Nova média de João Silva</div>
+              </div>
+              <button class="btn-primary" onclick="cGo('c-home')" style="margin-top:10px">🏠 Voltar ao início</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- NAVEGAÇÃO CLIENTE -->
+    <div class="phone-nav">
+      <button class="pnav-btn act bl" id="cnb-c-home" onclick="cGo('c-home')">🏠 Início</button>
+      <button class="pnav-btn" id="cnb-c-search" onclick="cGo('c-search')">🔍 Buscar</button>
+      <button class="pnav-btn" id="cnb-c-profile" onclick="cGo('c-profile')">👤 Perfil</button>
+      <button class="pnav-btn" id="cnb-c-request" onclick="cGo('c-request')">📤 Solicitar</button>
+      <button class="pnav-btn" id="cnb-c-track" onclick="cGo('c-track')">📍 Rastrear</button>
+      <button class="pnav-btn" id="cnb-c-chat" onclick="cGo('c-chat')">💬 Chat</button>
+      <button class="pnav-btn" id="cnb-c-payment" onclick="cGo('c-payment')">💳 Pix</button>
+      <button class="pnav-btn" id="cnb-c-review" onclick="cGo('c-review')">⭐ Avaliar</button>
+    </div>
+  </div>
+
+  <!-- ══ CONEXÃO VISUAL ═══════════════════════════ -->
+  <div class="connection">
+    <div class="conn-label">Firebase Firestore</div>
+    <div class="conn-line">
+      <div id="sync-packet" style="position:absolute;width:10px;height:10px;border-radius:50%;background:var(--g);top:-5px;left:50%;transform:translateX(-50%);opacity:0;transition:none"></div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:6px 10px;text-align:center">
+      <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:3px">Sincronização</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.5)" id="sync-status">Em espera</div>
+    </div>
+    <div class="conn-line">
+      <div id="sync-packet2" style="position:absolute;width:10px;height:10px;border-radius:50%;background:var(--bl);bottom:-5px;left:50%;transform:translateX(-50%);opacity:0;transition:none"></div>
+    </div>
+    <div class="conn-label">Tempo real</div>
+  </div>
+
+  <!-- ══ APP PRESTADOR ═════════════════════════════ -->
+  <div class="app-col">
+    <div class="app-label prestador">🔨 App do prestador</div>
+
+    <div class="phone-frame" id="phone-p" style="position:relative">
+      <div class="phone-notch"></div>
+      <div id="p-notif-badge" class="notification-bubble" style="display:none">1</div>
+      <div class="phone-screen">
+        <div class="status-bar" id="sb-p" style="background:var(--bgc);color:var(--t0)">
+          <span>9:41</span><span>● ● WiFi 🔋</span>
+        </div>
+        <div style="position:relative;height:calc(100% - 34px);overflow:hidden" id="pscreens">
+
+          <!-- P: DASHBOARD -->
+          <div class="screen on" id="p-dash">
+            <div class="appbar" style="justify-content:space-between">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:var(--t0)">Meu painel</div>
+                <div style="font-size:10px;color:var(--t2)">João Silva · PRO ✓</div>
+              </div>
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--g)">JS</div>
+            </div>
+
+            <!-- STATS -->
+            <div style="display:flex;gap:6px;padding:8px 10px">
+              <div class="stat-mini"><div class="stat-n" id="p-stat-new">0</div><div class="stat-l">Novos</div></div>
+              <div class="stat-mini"><div class="stat-n">1</div><div class="stat-l">Andamento</div></div>
+              <div class="stat-mini"><div class="stat-n" style="font-size:14px">R$480</div><div class="stat-l">Mês</div></div>
+              <div class="stat-mini"><div class="stat-n">4.9</div><div class="stat-l">Nota</div></div>
+            </div>
+
+            <!-- TABS -->
+            <div style="display:flex;border-bottom:.5px solid var(--brl);padding:0 10px">
+              <div style="padding:7px 10px 7px 0;font-size:12px;font-weight:500;color:var(--g);border-bottom:2px solid var(--g)">Novos <span id="p-tab-count">(0)</span></div>
+              <div style="padding:7px 10px;font-size:12px;color:var(--t2)">Andamento</div>
+              <div style="padding:7px 10px;font-size:12px;color:var(--t2)">Histórico</div>
+            </div>
+
+            <!-- CHAMADOS -->
+            <div style="padding:8px 0 80px">
+              <div id="p-empty-state" style="display:flex;flex-direction:column;align-items:center;padding:32px 16px;color:var(--t2);gap:8px">
+                <div style="font-size:32px">📭</div>
+                <div style="font-size:13px">Nenhum chamado novo</div>
+                <div style="font-size:11px;text-align:center;line-height:1.5">Quando um cliente solicitar seu serviço, ele aparecerá aqui.</div>
+              </div>
+              <div id="p-new-request" style="display:none;padding:0 10px">
+                <div class="notif-card new" style="animation:slideIn .3s ease">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <span class="tag">⚡ Elétrica</span>
+                    <span class="badge amber">Novo chamado!</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--t1);line-height:1.5;margin-bottom:8px">"Tomada queimada na sala, cheiro de plástico ao ligar aparelhos."</div>
+                  <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:10px">
+                    <span>⏰ Agora · Hoje</span>
+                    <span style="color:var(--g);font-weight:500">R$80/h · Pix</span>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button class="btn-outline" style="height:34px;font-size:11px" onclick="pGo('p-chat')">💬 Chat</button>
+                    <button class="btn-primary" style="height:34px;font-size:12px" onclick="acceptRequest()">✓ Aceitar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-nav">
+              <div class="tab"><div style="font-size:18px">📋</div><div class="tab-lbl a">Chamados</div></div>
+              <div class="tab" onclick="pGo('p-agenda')"><div style="font-size:18px">📅</div><div class="tab-lbl">Agenda</div></div>
+              <div class="tab" onclick="pGo('p-chat')"><div style="font-size:18px">💬</div><div class="tab-lbl">Chat</div></div>
+              <div class="tab" onclick="pGo('p-profile')"><div style="font-size:18px">⚙️</div><div class="tab-lbl">Perfil</div></div>
+            </div>
+          </div>
+
+          <!-- P: AGENDA -->
+          <div class="screen off" id="p-agenda">
+            <div class="appbar">
+              <button class="back-btn" onclick="pGo('p-dash')">←</button>
+              <div class="appbar-title">Agenda da semana</div>
+            </div>
+            <div style="padding:8px 10px 80px">
+              <div style="display:flex;gap:4px;margin-bottom:10px">
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:8px;background:var(--bgs)"><div style="font-size:10px;color:var(--t2)">SEG</div><div style="font-size:14px;font-weight:500">12</div></div>
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:8px;background:var(--g)"><div style="font-size:10px;color:rgba(255,255,255,.7)">TER</div><div style="font-size:14px;font-weight:600;color:#fff">13</div></div>
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:8px;background:var(--bgs)"><div style="font-size:10px;color:var(--t2)">QUA</div><div style="font-size:14px;font-weight:500">14</div></div>
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:8px;background:var(--bgs)"><div style="font-size:10px;color:var(--t2)">QUI</div><div style="font-size:14px;font-weight:500">15</div></div>
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:8px;background:var(--bgs)"><div style="font-size:10px;color:var(--t2)">SEX</div><div style="font-size:14px;font-weight:500">16</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--t2);margin-bottom:8px">Hoje — Terça, 13</div>
+              <div class="notif-card" style="border-left:3px solid var(--g);border-radius:0 10px 10px 0;padding:10px 12px;margin:0 0 8px">
+                <div style="font-size:11px;color:var(--g);font-weight:500">09:00 – 11:00</div>
+                <div style="font-size:13px;font-weight:500;color:var(--t0)">Instalação elétrica</div>
+                <div style="font-size:11px;color:var(--t2)">Rua das Flores, 123</div>
+              </div>
+              <div class="notif-card" style="border-left:3px solid var(--bl);border-radius:0 10px 10px 0;padding:10px 12px;margin:0 0 8px">
+                <div style="font-size:11px;color:var(--bl);font-weight:500">14:00 – estimado</div>
+                <div style="font-size:13px;font-weight:500;color:var(--t0)">Tomada queimada <span class="badge amber" style="vertical-align:middle">Novo</span></div>
+                <div style="font-size:11px;color:var(--t2)">Av. Central, 456</div>
+              </div>
+              <div style="font-size:11px;color:var(--t2);margin-bottom:8px;margin-top:14px">Quarta, 14</div>
+              <div class="notif-card" style="border-left:3px solid var(--am);border-radius:0 10px 10px 0;padding:10px 12px;margin:0 0 8px">
+                <div style="font-size:11px;color:var(--am);font-weight:500">10:00 – 12:00</div>
+                <div style="font-size:13px;font-weight:500;color:var(--t0)">Troca de disjuntor</div>
+                <div style="font-size:11px;color:var(--t2)">Condomínio Sol Nascente</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- P: CHAT -->
+          <div class="screen off" id="p-chat">
+            <div class="appbar">
+              <button class="back-btn" onclick="pGo('p-dash')">←</button>
+              <div style="display:flex;align-items:center;gap:8px;flex:1">
+                <div class="avatar" style="width:30px;height:30px;background:var(--bl50);color:var(--bl);font-size:11px">SC</div>
+                <div><div style="font-size:13px;font-weight:500">Sebastião (cliente)</div><div style="font-size:10px;color:var(--g)">● Online</div></div>
+              </div>
+            </div>
+            <div style="padding:10px;min-height:340px">
+              <div class="msg other"><div class="bubble other" style="background:var(--bl50);color:#0C447C">Olá João! Minha tomada queimou. Você pode vir?</div></div>
+              <div class="msg me"><div class="bubble me">Oi! Vi sua solicitação. Posso estar aí em 20 min! 👍</div></div>
+              <div class="msg other"><div class="bubble other" style="background:var(--bl50);color:#0C447C">Ótimo! Te espero.</div></div>
+              <div class="msg me"><div class="bubble me">Pode me mandar foto da tomada?</div></div>
+              <div class="msg other"><div class="bubble other" style="background:var(--bl50);color:#0C447C">📷 [foto da tomada queimada]</div></div>
+              <div class="msg me"><div class="bubble me">Entendi! É o condutor. Tenho peças comigo, resolvo hoje ✓</div></div>
+            </div>
+            <div style="background:var(--bgc);border-top:.5px solid var(--brl);padding:8px 10px 16px;display:flex;gap:8px;align-items:center">
+              <span style="font-size:18px">📷</span>
+              <div style="flex:1;background:var(--bgs);border-radius:20px;padding:8px 12px;font-size:12px;color:var(--t2)">Responder...</div>
+              <div style="width:34px;height:34px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer">➤</div>
+            </div>
+          </div>
+
+          <!-- P: MANAGE SERVICE -->
+          <div class="screen off" id="p-service">
+            <div class="appbar">
+              <button class="back-btn" onclick="pGo('p-dash')">←</button>
+              <div class="appbar-title">Gerenciar serviço</div>
+            </div>
+            <div style="padding:8px 0 80px">
+              <div class="section" style="text-align:center">
+                <span id="p-svc-badge" class="badge green" style="font-size:11px;padding:5px 12px">✓ Chamado aceito</span>
+              </div>
+              <div class="section">
+                <div class="sec-title">Atualizar status</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <button id="p-btn-caminho" class="btn-primary" onclick="updateStatus('caminho')" style="font-size:12px;height:38px">🚗 Estou a caminho</button>
+                  <button id="p-btn-andamento" class="btn-primary" onclick="updateStatus('andamento')" style="font-size:12px;height:38px;display:none">🔧 Iniciar serviço</button>
+                  <button id="p-btn-concluido" class="btn-primary" onclick="updateStatus('concluido')" style="font-size:12px;height:38px;display:none">✅ Marcar como concluído</button>
+                  <button class="btn-outline" onclick="pGo('p-chat')" style="height:38px;font-size:12px">💬 Chat com cliente</button>
+                </div>
+              </div>
+              <div class="section">
+                <div class="info-row"><span class="info-key">Serviço</span><span class="info-val">Elétrica</span></div>
+                <div class="info-row"><span class="info-key">Cliente</span><span class="info-val">Sebastião</span></div>
+                <div class="info-row"><span class="info-key">Endereço</span><span class="info-val">Av. Central, 456</span></div>
+                <div class="info-row"><span class="info-key">Pagamento</span><span class="info-val">Pix · R$80/h</span></div>
+              </div>
+              <div class="section">
+                <div class="sec-title">Defina o valor final</div>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div style="background:var(--bgs);border-radius:8px;padding:10px;flex:1;font-size:14px;font-weight:600;color:var(--t0)">R$ 160,00</div>
+                  <button class="btn-outline" style="flex:1;height:40px;font-size:12px">Editar</button>
+                </div>
+                <div style="font-size:10px;color:var(--t2);margin-top:5px">2h × R$80/h = R$160,00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- P: PROFILE CONFIG -->
+          <div class="screen off" id="p-profile">
+            <div class="appbar">
+              <button class="back-btn" onclick="pGo('p-dash')">←</button>
+              <div class="appbar-title">Meu perfil</div>
+            </div>
+            <div style="padding:8px 0 80px">
+              <div class="section" style="display:flex;align-items:center;gap:12px">
+                <div class="avatar" style="width:52px;height:52px;background:#E1F5EE;color:var(--g);font-size:16px">JS</div>
+                <div style="flex:1">
+                  <div style="font-size:15px;font-weight:600;color:var(--t0)">João Silva</div>
+                  <div class="stars">★★★★★ <span style="color:var(--t2)">4.9 · 47 serviços</span></div>
+                  <div style="margin-top:4px;display:flex;gap:4px">
+                    <span class="badge green">PRO</span>
+                    <span class="badge green">✓ Verificado</span>
+                  </div>
+                </div>
+              </div>
+              <div class="section">
+                <div class="sec-title">Configurações</div>
+                <div class="info-row"><span class="info-key">Preço/hora</span><span class="info-val" style="color:var(--g)">R$ 80,00 →</span></div>
+                <div class="info-row"><span class="info-key">Raio</span><span class="info-val" style="color:var(--g)">15 km →</span></div>
+                <div class="info-row"><span class="info-key">Disponível</span><span class="info-val"><span class="badge green">Ativo</span></span></div>
+                <div class="info-row"><span class="info-key">Plano</span><span class="info-val"><span class="badge green">PRO · R$29/mês</span></span></div>
+              </div>
+              <div class="section">
+                <div class="sec-title">Especialidades</div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  <span class="tag">Elétrica</span>
+                  <span class="tag">Manutenção</span>
+                  <span class="tag">Instalações</span>
+                  <span style="background:var(--bgs);color:var(--g);font-size:10px;font-weight:500;padding:2px 7px;border-radius:99px;cursor:pointer">+ adicionar</span>
+                </div>
+              </div>
+              <div class="section">
+                <div class="sec-title">Faturamento este mês</div>
+                <div style="font-size:22px;font-weight:700;color:var(--g)">R$ 480,00</div>
+                <div style="font-size:11px;color:var(--t2);margin-top:2px">6 serviços concluídos</div>
+                <div style="background:var(--bgs);border-radius:8px;padding:8px;margin-top:10px">
+                  <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:4px"><span>Receita bruta</span><span>R$ 480,00</span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:4px"><span>Taxa Pix (5%)</span><span style="color:var(--r)">-R$ 24,00</span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--t0)"><span>Líquido</span><span>R$ 456,00</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- P: PAYMENT RECEIVED -->
+          <div class="screen off" id="p-received">
+            <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;gap:10px">
+              <div style="width:70px;height:70px;border-radius:50%;background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:6px">💰</div>
+              <div style="font-size:20px;font-weight:600;color:var(--t0)">Pix recebido!</div>
+              <div style="font-size:28px;font-weight:700;color:var(--g)">R$ 160,00</div>
+              <div style="font-size:12px;color:var(--t2)">depositado na sua conta</div>
+              <div style="background:var(--bgs);border-radius:10px;padding:12px;width:100%;margin-top:8px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2)"><span>Cliente</span><span>Sebastião</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-top:4px"><span>Serviço</span><span>Elétrica</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-top:4px"><span>Taxa Serviço Aqui (5%)</span><span>-R$ 8,00</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--t0);margin-top:6px;padding-top:6px;border-top:.5px solid var(--br)"><span>Recebido</span><span style="color:var(--g)">R$ 152,00</span></div>
+              </div>
+              <div style="background:var(--am50);border-radius:8px;padding:10px;width:100%">
+                <div style="font-size:12px;color:#633806">⭐ O cliente te avaliou com 5 estrelas!</div>
+              </div>
+              <button class="btn-primary" onclick="pGo('p-dash')" style="margin-top:8px">📋 Ver painel</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- NAVEGAÇÃO PRESTADOR -->
+    <div class="phone-nav">
+      <button class="pnav-btn act gr" id="pnb-p-dash" onclick="pGo('p-dash')">📋 Painel</button>
+      <button class="pnav-btn" id="pnb-p-agenda" onclick="pGo('p-agenda')">📅 Agenda</button>
+      <button class="pnav-btn" id="pnb-p-chat" onclick="pGo('p-chat')">💬 Chat</button>
+      <button class="pnav-btn" id="pnb-p-service" onclick="pGo('p-service')">🔧 Serviço</button>
+      <button class="pnav-btn" id="pnb-p-profile" onclick="pGo('p-profile')">⚙️ Perfil</button>
+      <button class="pnav-btn" id="pnb-p-received" onclick="pGo('p-received')">💰 Recebimento</button>
+    </div>
+  </div>
+
+</div><!-- /phones-area -->
+</div><!-- /stage -->
+
+<script>
+// ── NAVEGAÇÃO CLIENTE ─────────────────────────────
+const cScreenIds = ['c-home','c-search','c-profile','c-request','c-track','c-chat','c-payment','c-review','c-success'];
+let curC = 'c-home';
+function cGo(id) {
+  if (!document.getElementById(id)) return;
+  document.querySelectorAll('#cscreens .screen').forEach(s => { s.classList.add('off'); s.classList.remove('on'); });
+  const el = document.getElementById(id);
+  el.classList.remove('off'); el.classList.add('on'); el.scrollTop = 0;
+  document.querySelectorAll('[id^="cnb-"]').forEach(b => b.classList.remove('act','bl'));
+  const nb = document.getElementById('cnb-'+id);
+  if (nb) { nb.classList.add('act','bl'); }
+  curC = id;
+}
+
+// ── NAVEGAÇÃO PRESTADOR ───────────────────────────
+const pScreenIds = ['p-dash','p-agenda','p-chat','p-service','p-profile','p-received'];
+let curP = 'p-dash';
+function pGo(id) {
+  if (!document.getElementById(id)) return;
+  document.querySelectorAll('#pscreens .screen').forEach(s => { s.classList.add('off'); s.classList.remove('on'); });
+  const el = document.getElementById(id);
+  el.classList.remove('off'); el.classList.add('on'); el.scrollTop = 0;
+  document.querySelectorAll('[id^="pnb-"]').forEach(b => b.classList.remove('act','gr'));
+  const nb = document.getElementById('pnb-'+id);
+  if (nb) { nb.classList.add('act','gr'); }
+  curP = id;
+}
+
+// ── ANIMAÇÃO DE SINCRONIZAÇÃO ─────────────────────
+function animPacket(dir) {
+  return new Promise(resolve => {
+    const pid = dir === 'down' ? 'sync-packet' : 'sync-packet2';
+    const el = document.getElementById(pid);
+    el.style.transition = 'none';
+    el.style.opacity = '1';
+    el.style.top = dir === 'down' ? '-5px' : 'auto';
+    el.style.bottom = dir === 'down' ? 'auto' : '-5px';
+    document.getElementById('sync-status').textContent = dir === 'down' ? 'Enviando...' : 'Recebendo...';
+    el.style.transition = 'top 0.8s ease, bottom 0.8s ease, opacity 0.2s';
+    setTimeout(() => {
+      if (dir === 'down') { el.style.top = 'calc(100% + 5px)'; }
+      else { el.style.bottom = 'calc(100% + 5px)'; }
+    }, 50);
+    setTimeout(() => { el.style.opacity = '0'; document.getElementById('sync-status').textContent = 'Sincronizado ✓'; resolve(); }, 900);
+  });
+}
+
+// ── CLIENTE ENVIA SOLICITAÇÃO → PRESTADOR RECEBE ──
+async function sendRequest() {
+  cGo('c-track');
+  await delay(400);
+  await animPacket('down');
+  // Prestador recebe
+  document.getElementById('p-new-request').style.display = 'block';
+  document.getElementById('p-empty-state').style.display = 'none';
+  document.getElementById('p-stat-new').textContent = '1';
+  document.getElementById('p-tab-count').textContent = '(1)';
+  document.getElementById('p-notif-badge').style.display = 'flex';
+  pGo('p-dash');
+}
+
+// ── PRESTADOR ACEITA → CLIENTE VÊ ─────────────────
+async function acceptRequest() {
+  pGo('p-service');
+  document.getElementById('p-notif-badge').style.display = 'none';
+  document.getElementById('p-svc-badge').textContent = '✓ Chamado aceito';
+  await delay(300);
+  await animPacket('up');
+  // Cliente vê confirmação
+  const badge = document.getElementById('c-track-badge');
+  badge.className = 'badge green';
+  badge.textContent = '✓ João confirmou!';
+  const tl2 = document.getElementById('tl2');
+  tl2.className = 'tl-dot done'; tl2.textContent = '✓';
+  document.getElementById('tl2-lbl').style.color = 'var(--t0)';
+  document.getElementById('tl2-lbl').textContent = 'Prestador confirmou';
+  document.getElementById('tll3').className = 'tl-line done';
+  document.getElementById('tl3').className = 'tl-dot cur';
+  document.getElementById('c-chat-btn').style.display = 'flex';
+}
+
+// ── PRESTADOR ATUALIZA STATUS ─────────────────────
+let pStatusStep = 0;
+async function updateStatus(s) {
+  if (s === 'caminho') {
+    document.getElementById('p-btn-caminho').style.display = 'none';
+    document.getElementById('p-btn-andamento').style.display = 'flex';
+    document.getElementById('p-svc-badge').textContent = '🚗 A caminho do cliente';
+    document.getElementById('p-svc-badge').className = 'badge blue';
+    await animPacket('up');
+    document.getElementById('c-track-badge').textContent = '🚗 João está a caminho!';
+    document.getElementById('c-track-badge').className = 'badge blue';
+  } else if (s === 'andamento') {
+    document.getElementById('p-btn-andamento').style.display = 'none';
+    document.getElementById('p-btn-concluido').style.display = 'flex';
+    document.getElementById('p-svc-badge').textContent = '🔧 Serviço em andamento';
+    await animPacket('up');
+    document.getElementById('tl4').className = 'tl-dot cur';
+    document.getElementById('tll4').className = 'tl-line done';
+    document.getElementById('c-track-badge').textContent = '🔧 Serviço em andamento';
+  } else if (s === 'concluido') {
+    document.getElementById('p-svc-badge').textContent = '✅ Serviço concluído';
+    document.getElementById('p-svc-badge').className = 'badge green';
+    document.getElementById('p-btn-concluido').style.display = 'none';
+    await animPacket('up');
+    document.getElementById('tl5').className = 'tl-dot done'; document.getElementById('tl5').textContent = '✓';
+    document.getElementById('tll5').className = 'tl-line done';
+    document.getElementById('c-track-badge').textContent = '✅ Serviço concluído!';
+    document.getElementById('c-track-badge').className = 'badge green';
+    document.getElementById('c-pay-btn').style.display = 'flex';
+  }
+}
+
+// ── CLIENTE ENVIA AVALIAÇÃO ────────────────────────
+async function sendReview() {
+  cGo('c-success');
+  await delay(400);
+  await animPacket('down');
+  pGo('p-received');
+}
+
+// ── FLUXO AUTOMÁTICO COMPLETO ─────────────────────
+async function runSync() {
+  cGo('c-home'); pGo('p-dash');
+  document.getElementById('p-new-request').style.display = 'none';
+  document.getElementById('p-empty-state').style.display = 'flex';
+  document.getElementById('p-stat-new').textContent = '0';
+  document.getElementById('p-tab-count').textContent = '(0)';
+  document.getElementById('p-notif-badge').style.display = 'none';
+  document.getElementById('c-chat-btn').style.display = 'none';
+  document.getElementById('c-pay-btn').style.display = 'none';
+  document.getElementById('c-track-badge').className = 'badge amber';
+  document.getElementById('c-track-badge').textContent = '⏳ Aguardando confirmação';
+  ['tl2','tl3','tl4','tl5'].forEach(id => { const e=document.getElementById(id); if(e){e.className='tl-dot wait';e.textContent='';} });
+  ['tll3','tll4','tll5'].forEach(id => { const e=document.getElementById(id); if(e) e.className='tl-line wait'; });
+  document.getElementById('tl2-lbl').style.color='var(--t2)';
+  document.getElementById('tl2-lbl').textContent='Prestador confirma...';
+  document.getElementById('p-btn-caminho').style.display = 'flex';
+  document.getElementById('p-btn-andamento').style.display = 'none';
+  document.getElementById('p-btn-concluido').style.display = 'none';
+  document.getElementById('p-svc-badge').textContent = '✓ Chamado aceito';
+  document.getElementById('p-svc-badge').className = 'badge green';
+
+  await delay(600); cGo('c-profile');
+  await delay(700); cGo('c-request');
+  await delay(1000);
+  await sendRequest();
+  await delay(800);
+  await acceptRequest();
+  await delay(700); cGo('c-chat');
+  await delay(700); pGo('p-chat');
+  await delay(1200);
+  cGo('c-track');
+  await delay(400);
+  await updateStatus('caminho');
+  await delay(800);
+  await updateStatus('andamento');
+  await delay(800);
+  await updateStatus('concluido');
+  await delay(600); cGo('c-payment');
+  await delay(1000); cGo('c-review');
+  await delay(1000);
+  await sendReview();
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>
